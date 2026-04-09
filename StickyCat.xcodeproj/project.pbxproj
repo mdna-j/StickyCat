@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		583951EA2F875F6B00BFA88C /* StickyCat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StickyCat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		583951EA2F875F6B00BFA88C /* StickyCat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = StickyCat.app; path = /Users/pumazzz/Documents/GitHub/StickyCat/build/Debug/StickyCat.app; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -33,16 +33,7 @@
 			isa = PBXGroup;
 			children = (
 				583951EC2F875F6B00BFA88C /* StickyCat */,
-				583951EB2F875F6B00BFA88C /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		583951EB2F875F6B00BFA88C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				583951EA2F875F6B00BFA88C /* StickyCat.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -95,7 +86,7 @@
 			mainGroup = 583951E12F875F6B00BFA88C;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 583951EB2F875F6B00BFA88C /* Products */;
+			productRefGroup = 583951E12F875F6B00BFA88C;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (

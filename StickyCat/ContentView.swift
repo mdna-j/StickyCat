@@ -8,14 +8,28 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var viewModel = CatViewModel()
+    @State private var noteText: String = ""
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        ZStack {
+            // 1. Sticky note background + text editor
+            StickyNoteView(text: $noteText)
+
+            // 2. Ball (fixed position)
+            BallView()
+
+            // 3. Animated cat
+            CatView(cat: viewModel.cat)
+
+            // 4. Breed picker pinned to bottom
+            VStack {
+                Spacer()
+                BreedPickerView(selectedBreed: $viewModel.selectedBreed)
+                    .padding(.bottom, 12)
+            }
         }
-        .padding()
+        .frame(width: Constants.noteWidth, height: Constants.noteHeight)
     }
 }
 
