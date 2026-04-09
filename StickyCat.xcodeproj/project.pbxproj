@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		583952052F8761AB00BFA88C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 583952042F8761AB00BFA88C /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		583951EA2F875F6B00BFA88C /* StickyCat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = StickyCat.app; path = /Users/pumazzz/Documents/GitHub/StickyCat/build/Debug/StickyCat.app; sourceTree = "<absolute>"; };
+		583952042F8761AB00BFA88C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		583951E12F875F6B00BFA88C = {
 			isa = PBXGroup;
 			children = (
+				583952042F8761AB00BFA88C /* README.md */,
 				583951EC2F875F6B00BFA88C /* StickyCat */,
 			);
 			sourceTree = "<group>";
@@ -100,6 +106,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				583952052F8761AB00BFA88C /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
