@@ -2,12 +2,13 @@ import SwiftUI
 
 struct StickyNoteView: View {
     @Binding var text: String
+    var color: Color
 
     var body: some View {
         ZStack(alignment: .topLeading) {
             // Note background
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(red: 1.0, green: 0.98, blue: 0.75))  // warm sticky yellow
+                .fill(color)
                 .shadow(color: .black.opacity(0.15), radius: 8, x: 2, y: 4)
 
             // Ruled lines
@@ -35,3 +36,4 @@ struct StickyNoteView: View {
         .frame(width: Constants.noteWidth, height: Constants.noteHeight)
     }
 }
+

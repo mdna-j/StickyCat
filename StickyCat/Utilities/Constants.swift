@@ -26,4 +26,14 @@ enum Constants {
 
     // How far the cat moves per walk action
     static let walkStep: CGFloat = 45
+
+    // Sticky note color options
+    static let noteColors: [Color] = [
+        Color(red: 1.0, green: 0.98, blue: 0.75),  // yellow (default)
+        Color(red: 1.0, green: 0.85, blue: 0.88),  // pink
+        Color(red: 0.85, green: 0.93, blue: 1.0),  // blue
+        Color(red: 0.88, green: 1.0, blue: 0.88),  // green
+        Color(red: 0.95, green: 0.88, blue: 1.0),  // lavender
+    ]
 }
+

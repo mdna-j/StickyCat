@@ -5,12 +5,6 @@ struct CatView: View {
 
     var body: some View {
         ZStack {
-            // ── If you have real assets, replace this ZStack with:
-            // Image("\(cat.breed.rawValue)_\(cat.state.assetSuffix)")
-            //     .resizable()
-            //     .frame(width: Constants.catWidth, height: Constants.catHeight)
-            // ──
-
             // Breed emoji (body)
             Text(cat.breed.emoji)
                 .font(.system(size: 40))
