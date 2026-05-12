@@ -14,7 +14,7 @@ struct ContentView: View {
             BallView()
 
             // 3. Animated cat
-            CatView(cat: viewModel.cat)
+            CatView(cat: viewModel.cat, frameIndex: viewModel.frameIndex)
 
             // 4. Color picker (bottom-left) + breed picker (bottom-right)
             VStack {
@@ -22,7 +22,7 @@ struct ContentView: View {
                 HStack {
                     NoteColorPickerView(selectedColor: $noteColor)
                     Spacer()
-                    BreedPickerView(selectedBreed: $viewModel.selectedBreed)
+                    BreedPickerView(catBreed: $viewModel.catBreed)
                 }
                 .padding(.horizontal, 12)
                 .padding(.bottom, 12)

@@ -7,7 +7,7 @@ struct CatModel {
     var breed: CatBreed
     var facingRight: Bool
 
-    init(breed: CatBreed = .calico) {
+    init(breed: CatBreed = .default) {
         self.x = Constants.minX + 20
         self.y = Constants.floorY
         self.state = .sit
@@ -15,3 +15,4 @@ struct CatModel {
         self.facingRight = true
     }
 }
+

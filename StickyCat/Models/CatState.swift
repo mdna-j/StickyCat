@@ -2,29 +2,25 @@ import Foundation
 
 enum CatState {
     case sit
-    case walk1
+    case walk1  // not used for frame switching anymore — ViewModel uses frameIndex instead
     case walk2
     case jump
     case play
 
-    /// Emoji overlay shown on top of the breed emoji to communicate state.
-    var stateEmoji: String {
+    // The spritesheet asset name for this state
+    var assetName: String {
         switch self {
-        case .sit:          return "💤"
-        case .walk1, .walk2: return "🐾"
-        case .jump:         return "⬆️"
-        case .play:         return "🎾"
+        case .walk1, .walk2: return "cat_run"
+        default:             return "cat_idle"
         }
     }
 
-    /// Asset image name suffix — used when real sprites are added.
-    var assetSuffix: String {
+    // Total number of frames in this state's spritesheet
+    var frameCount: Int {
         switch self {
-        case .sit:   return "sit"
-        case .walk1: return "walk1"
-        case .walk2: return "walk2"
-        case .jump:  return "jump"
-        case .play:  return "play"
+        case .walk1, .walk2: return 6
+        default:             return 12
         }
     }
 }
+

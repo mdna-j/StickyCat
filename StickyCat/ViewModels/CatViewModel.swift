@@ -11,19 +11,35 @@ enum CatAction: CaseIterable {
 
 @MainActor
 class CatViewModel: ObservableObject {
-    @Published var cat: CatModel = CatModel(breed: .calico)
+    @Published var cat: CatModel = CatModel(breed: .default)
+    @Published var frameIndex: Int = 0
 
-    // Breed is mirrored here so the picker binding is clean
-    @Published var selectedBreed: CatBreed = .calico {
-        didSet { cat.breed = selectedBreed }
+    // Cat color — updating this live-recolors the sprite
+    @Published var catBreed: CatBreed = .default {
+        didSet { cat.breed = catBreed }
     }
 
     private var behaviorTimer: Timer?
     private var walkFrameTimer: Timer?
-    private var jumpPhase: Int = 0  // 0 = not jumping, 1 = up, 2 = down
+    private var spriteTimer: Timer?
+    private var jumpPhase: Int = 0
 
     init() {
         startBehaviorLoop()
+        startSpriteLoop()
+    }
+
+    // MARK: - Sprite Frame Loop
+
+    /// Cycles through the frames of whatever spritesheet the current state uses.
+    func startSpriteLoop() {
+        spriteTimer?.invalidate()
+        spriteTimer = Timer.scheduledTimer(withTimeInterval: Constants.spriteFrameInterval, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.frameIndex = (self.frameIndex + 1) % self.cat.state.frameCount
+            }
+        }
     }
 
     // MARK: - Behavior Loop
@@ -63,6 +79,7 @@ class CatViewModel: ObservableObject {
 
     private func performSit() {
         stopWalkFrames()
+        frameIndex = 0
         withAnimation(.easeOut(duration: 0.2)) {
             cat.state = .sit
         }
@@ -82,6 +99,7 @@ class CatViewModel: ObservableObject {
         }
 
         // Start alternating walk frames
+        frameIndex = 0
         cat.state = .walk1
         stopWalkFrames()
         walkFrameTimer = Timer.scheduledTimer(
@@ -107,6 +125,7 @@ class CatViewModel: ObservableObject {
 
     private func performJump() {
         stopWalkFrames()
+        frameIndex = 0
         jumpPhase = 1
 
         withAnimation(.easeOut(duration: 0.25)) {
@@ -128,6 +147,7 @@ class CatViewModel: ObservableObject {
 
     private func performPlay() {
         stopWalkFrames()
+        frameIndex = 0
 
         // Walk toward ball
         let ballX = Constants.ballX - Constants.catWidth / 2
@@ -157,5 +177,7 @@ class CatViewModel: ObservableObject {
     deinit {
         behaviorTimer?.invalidate()
         walkFrameTimer?.invalidate()
+        spriteTimer?.invalidate()
     }
 }
+

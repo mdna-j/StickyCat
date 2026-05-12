@@ -24,6 +24,9 @@ enum Constants {
     // Walk frame alternation interval
     static let walkFrameInterval: Double = 0.35
 
+    // Sprite sheet frame advance interval (how fast frames cycle)
+    static let spriteFrameInterval: Double = 0.08
+
     // How far the cat moves per walk action
     static let walkStep: CGFloat = 45
 
