@@ -1,50 +1,39 @@
 import SwiftUI
 
 struct BreedPickerView: View {
-    @Binding var catBreed: CatBreed
+    @Binding var selectedBreed: CatBreed
+    @State private var isExpanded: Bool = false
 
     var body: some View {
-        HStack(spacing: 8) {
-            // Preset swatches
-            ForEach(CatBreed.presets, id: \.color.description) { preset in
+        Menu {
+            ForEach(CatBreed.allCases) { breed in
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        catBreed = preset
+                        selectedBreed = breed
                     }
                 } label: {
-                    Circle()
-                        .fill(preset.color)
-                        .frame(width: 20, height: 20)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.primary.opacity(0.25), lineWidth: 1)
-                        )
-                        .overlay(
-                            Circle()
-                                .stroke(Color.primary.opacity(0.7), lineWidth: 2)
-                                .opacity(catBreed.color.description == preset.color.description ? 1 : 0)
-                        )
-                        .scaleEffect(catBreed.color.description == preset.color.description ? 1.2 : 1.0)
-                        .animation(.easeInOut(duration: 0.15), value: catBreed.color.description)
+                    HStack {
+                        Text(breed.displayName)
+                        if selectedBreed == breed {
+                            Spacer()
+                            Image(systemName: "checkmark")
+                        }
+                    }
                 }
-                .buttonStyle(.plain)
             }
-
-            Divider()
-                .frame(height: 16)
-                .opacity(0.4)
-
-            // Custom color picker
-            ColorPicker("", selection: Binding(
-                get: { catBreed.color },
-                set: { catBreed = CatBreed(color: $0) }
-            ), supportsOpacity: false)
-            .labelsHidden()
-            .frame(width: 24, height: 24)
+        } label: {
+            HStack(spacing: 6) {
+                Text(selectedBreed.displayName)
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 10, weight: .medium))
+            }
+            .foregroundColor(Color(red: 0.3, green: 0.28, blue: 0.22))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(.ultraThinMaterial, in: Capsule())
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(.ultraThinMaterial, in: Capsule())
+        .menuStyle(.borderlessButton)
+        .fixedSize()
     }
 }
-

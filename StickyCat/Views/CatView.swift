@@ -6,14 +6,12 @@ struct CatView: View {
 
     var body: some View {
         SpriteSheetView(
-            imageName: cat.state.assetName,
+            imageName: cat.assetName,
             frameCount: cat.state.frameCount,
-            currentFrame: frameIndex,
-            tint: cat.breed.color
+            currentFrame: frameIndex
         )
         .frame(width: Constants.catWidth, height: Constants.catHeight)
         .scaleEffect(x: cat.facingRight ? 1 : -1, y: 1)
         .position(x: cat.x, y: cat.y)
     }
 }
-

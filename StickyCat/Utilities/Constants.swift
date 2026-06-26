@@ -15,17 +15,20 @@ enum Constants {
     static let jumpY: CGFloat = 250
 
     static let ballX: CGFloat = 300
-    static let ballY: CGFloat = 318
+    static let ballY: CGFloat = Constants.floorY + 4  // sits just at floor level
 
-    // Behavior loop interval range (seconds)
-    static let minActionInterval: Double = 2.5
-    static let maxActionInterval: Double = 4.0
+    static let bowlX: CGFloat = 70
+    static let bowlY: CGFloat = Constants.floorY + 8  // bowl is taller so sits slightly lower
+
+    // Behavior loop interval range (seconds) — longer gaps so actions don't spam
+    static let minActionInterval: Double = 4.0
+    static let maxActionInterval: Double = 8.0
 
     // Walk frame alternation interval
     static let walkFrameInterval: Double = 0.35
 
-    // Sprite sheet frame advance interval (how fast frames cycle)
-    static let spriteFrameInterval: Double = 0.08
+    // Sprite sheet frame advance interval — slowed down for more natural feel
+    static let spriteFrameInterval: Double = 0.12
 
     // How far the cat moves per walk action
     static let walkStep: CGFloat = 45
@@ -39,4 +42,3 @@ enum Constants {
         Color(red: 0.95, green: 0.88, blue: 1.0),  // lavender
     ]
 }
-

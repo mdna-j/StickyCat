@@ -1,4 +1,4 @@
-# StickyCat 🐱
+# StickyCat
 
 A macOS sticky note app with an animated virtual cat built in SwiftUI.
 
@@ -10,7 +10,6 @@ A macOS sticky note app with an animated virtual cat built in SwiftUI.
 ## Features
 
 - Editable sticky note
-- Animated cat with 5 states: sit, walk, jump, play
-- Calico and Ragdoll breed selection
+- Animated cat with 7 states: idle, walk left, walk right, jump, sleep, meow, pounce
 - Timed random behavior loop
 

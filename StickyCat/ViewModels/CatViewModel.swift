@@ -2,25 +2,25 @@ import SwiftUI
 import Combine
 
 enum CatAction: CaseIterable {
-    case sit
+    case idle
     case walkRight
     case walkLeft
     case jump
-    case play
+    case sleep
+    case meow
+    case pounce
 }
 
 @MainActor
 class CatViewModel: ObservableObject {
-    @Published var cat: CatModel = CatModel(breed: .default)
+    @Published var cat: CatModel = CatModel(breed: .black)
     @Published var frameIndex: Int = 0
 
-    // Cat color — updating this live-recolors the sprite
-    @Published var catBreed: CatBreed = .default {
-        didSet { cat.breed = catBreed }
+    @Published var selectedBreed: CatBreed = .black {
+        didSet { cat.breed = selectedBreed }
     }
 
     private var behaviorTimer: Timer?
-    private var walkFrameTimer: Timer?
     private var spriteTimer: Timer?
     private var jumpPhase: Int = 0
 
@@ -31,7 +31,6 @@ class CatViewModel: ObservableObject {
 
     // MARK: - Sprite Frame Loop
 
-    /// Cycles through the frames of whatever spritesheet the current state uses.
     func startSpriteLoop() {
         spriteTimer?.invalidate()
         spriteTimer = Timer.scheduledTimer(withTimeInterval: Constants.spriteFrameInterval, repeats: true) { [weak self] _ in
@@ -49,9 +48,7 @@ class CatViewModel: ObservableObject {
     }
 
     private func scheduleNextAction() {
-        let interval = Double.random(
-            in: Constants.minActionInterval...Constants.maxActionInterval
-        )
+        let interval = Double.random(in: Constants.minActionInterval...Constants.maxActionInterval)
         behaviorTimer?.invalidate()
         behaviorTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
             Task { @MainActor [weak self] in
@@ -62,27 +59,35 @@ class CatViewModel: ObservableObject {
     }
 
     private func performRandomAction() {
-        // Don't interrupt a jump mid-sequence
         guard jumpPhase == 0 else { return }
 
-        let action = CatAction.allCases.randomElement() ?? .sit
+        // Weighted pool — more entries = higher chance
+        let pool: [CatAction] = [
+            .walkRight, .walkRight, .walkRight,  // 3x
+            .walkLeft,  .walkLeft,  .walkLeft,   // 3x
+            .jump,      .jump,      .jump,       // 3x
+            .meow,      .meow,      .meow,       // 3x
+            .idle,      .idle,                   // 2x
+            .pounce,                             // 1x
+            .sleep,                              // 1x
+        ]
+
+        let action = pool.randomElement() ?? .idle
         switch action {
-        case .sit:       performSit()
+        case .idle:      performIdle()
         case .walkRight: performWalk(direction: .right)
         case .walkLeft:  performWalk(direction: .left)
         case .jump:      performJump()
-        case .play:      performPlay()
+        case .sleep:     performSleep()
+        case .meow:      performMeow()
+        case .pounce:    performPounce()
         }
     }
 
     // MARK: - Actions
 
-    private func performSit() {
-        stopWalkFrames()
-        frameIndex = 0
-        withAnimation(.easeOut(duration: 0.2)) {
-            cat.state = .sit
-        }
+    private func performIdle() {
+        setState(.idle)
     }
 
     private enum Direction { case left, right }
@@ -98,86 +103,60 @@ class CatViewModel: ObservableObject {
             cat.facingRight = false
         }
 
-        // Start alternating walk frames
-        frameIndex = 0
-        cat.state = .walk1
-        stopWalkFrames()
-        walkFrameTimer = Timer.scheduledTimer(
-            withTimeInterval: Constants.walkFrameInterval,
-            repeats: true
-        ) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                self.cat.state = (self.cat.state == .walk1) ? .walk2 : .walk1
-            }
-        }
+        setState(.run)
+        withAnimation(.linear(duration: 0.5)) { cat.x = newX }
 
-        withAnimation(.linear(duration: 0.5)) {
-            cat.x = newX
-        }
-
-        // Stop walking after one step duration
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in
-            self?.stopWalkFrames()
-            self?.cat.state = .sit
+            self?.setState(.idle)
         }
     }
 
     private func performJump() {
-        stopWalkFrames()
-        frameIndex = 0
         jumpPhase = 1
+        setState(.jump)
 
-        withAnimation(.easeOut(duration: 0.25)) {
-            cat.state = .jump
-            cat.y = Constants.jumpY
-        }
+        withAnimation(.easeOut(duration: 0.25)) { cat.y = Constants.jumpY }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self else { return }
-            withAnimation(.easeIn(duration: 0.25)) {
-                self.cat.y = Constants.floorY
-            }
+            withAnimation(.easeIn(duration: 0.25)) { self.cat.y = Constants.floorY }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-                self?.cat.state = .sit
+                self?.setState(.idle)
                 self?.jumpPhase = 0
             }
         }
     }
 
-    private func performPlay() {
-        stopWalkFrames()
-        frameIndex = 0
-
-        // Walk toward ball
-        let ballX = Constants.ballX - Constants.catWidth / 2
-        let moveDuration = abs(cat.x - ballX) / 120.0  // speed proportional to distance
-
-        cat.state = .walk1
-        cat.facingRight = cat.x < ballX
-
-        withAnimation(.linear(duration: moveDuration)) {
-            cat.x = ballX
+    private func performSleep() {
+        setState(.sleep)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6.0) { [weak self] in
+            self?.setState(.idle)
         }
+    }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + moveDuration) { [weak self] in
-            withAnimation(.easeOut(duration: 0.15)) {
-                self?.cat.state = .play
-            }
+    private func performMeow() {
+        setState(.meow)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            self?.setState(.idle)
+        }
+    }
+
+    private func performPounce() {
+        setState(.pounce)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            self?.setState(.idle)
         }
     }
 
     // MARK: - Helpers
 
-    private func stopWalkFrames() {
-        walkFrameTimer?.invalidate()
-        walkFrameTimer = nil
+    private func setState(_ state: CatState) {
+        frameIndex = 0
+        cat.state = state
     }
 
     deinit {
         behaviorTimer?.invalidate()
-        walkFrameTimer?.invalidate()
         spriteTimer?.invalidate()
     }
 }
-

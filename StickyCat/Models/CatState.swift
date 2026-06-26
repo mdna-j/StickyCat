@@ -1,26 +1,35 @@
 import Foundation
 
 enum CatState {
+    case idle
+    case run
     case sit
-    case walk1  // not used for frame switching anymore — ViewModel uses frameIndex instead
-    case walk2
     case jump
-    case play
+    case sleep
+    case meow
+    case pounce
 
-    // The spritesheet asset name for this state
-    var assetName: String {
+    var assetSuffix: String {
         switch self {
-        case .walk1, .walk2: return "cat_run"
-        default:             return "cat_idle"
+        case .idle:   return "Idle"
+        case .run:    return "Run"
+        case .sit:    return "Sit"
+        case .jump:   return "Jump"
+        case .sleep:  return "Sleep"
+        case .meow:   return "Meow"
+        case .pounce: return "Pounce"
         }
     }
 
-    // Total number of frames in this state's spritesheet
     var frameCount: Int {
         switch self {
-        case .walk1, .walk2: return 6
-        default:             return 12
+        case .idle:   return 12
+        case .run:    return 6
+        case .sit:    return 7
+        case .jump:   return 15
+        case .sleep:  return 4
+        case .meow:   return 7
+        case .pounce: return 13
         }
     }
 }
-
