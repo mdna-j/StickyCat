@@ -28,12 +28,13 @@ struct BreedPickerView: View {
                 Image(systemName: "chevron.up.chevron.down")
                     .font(.system(size: 10, weight: .medium))
             }
-            .foregroundColor(Color(red: 0.3, green: 0.28, blue: 0.22))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(.ultraThinMaterial, in: Capsule())
+            .foregroundColor(.primary)
         }
         .menuStyle(.borderlessButton)
         .fixedSize()
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(.ultraThinMaterial, in: Capsule())
     }
 }
+
