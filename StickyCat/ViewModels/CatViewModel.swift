@@ -61,16 +61,25 @@ class CatViewModel: ObservableObject {
     private func performRandomAction() {
         guard jumpPhase == 0 else { return }
 
-        // Weighted pool — more entries = higher chance
-        let pool: [CatAction] = [
-            .walkRight, .walkRight, .walkRight,  // 3x
-            .walkLeft,  .walkLeft,  .walkLeft,   // 3x
-            .jump,      .jump,      .jump,       // 3x
-            .meow,      .meow,      .meow,       // 3x
-            .idle,      .idle,                   // 2x
-            .pounce,                             // 1x
-            .sleep,                              // 1x
+        var pool: [CatAction] = [
+            .walkRight, .walkRight, .walkRight,
+            .walkLeft,  .walkLeft,  .walkLeft,
+            .jump,      .jump,      .jump,
+            .meow,      .meow,      .meow,
+            .idle,      .idle,
+            .pounce,
+            .sleep,
         ]
+
+        if cat.x <= Constants.minX + Constants.walkStep {
+            pool = pool.filter { $0 != .walkLeft }
+            pool += [.walkRight, .walkRight, .walkRight]
+        }
+
+        if cat.x >= Constants.maxX - Constants.walkStep {
+            pool = pool.filter { $0 != .walkRight }
+            pool += [.walkLeft, .walkLeft, .walkLeft]
+        }
 
         let action = pool.randomElement() ?? .idle
         switch action {
@@ -82,6 +91,13 @@ class CatViewModel: ObservableObject {
         case .meow:      performMeow()
         case .pounce:    performPounce()
         }
+    }
+
+    // MARK: - External Triggers
+
+    func triggerTypingJump() {
+        guard jumpPhase == 0 else { return }
+        performJump()
     }
 
     // MARK: - Actions
