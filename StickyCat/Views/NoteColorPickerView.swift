@@ -1,18 +1,18 @@
 import SwiftUI
 
 struct NoteColorPickerView: View {
-    @Binding var selectedColor: Color
+    @Binding var selectedIndex: Int
 
     var body: some View {
         HStack(spacing: 8) {
-            ForEach(Constants.noteColors, id: \.self) { color in
+            ForEach(Constants.noteColors.indices, id: \.self) { index in
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        selectedColor = color
+                        selectedIndex = index
                     }
                 } label: {
                     Circle()
-                        .fill(color)
+                        .fill(Constants.noteColors[index])
                         .frame(width: 20, height: 20)
                         .overlay(
                             Circle()
@@ -21,10 +21,10 @@ struct NoteColorPickerView: View {
                         .overlay(
                             Circle()
                                 .stroke(Color.primary.opacity(0.6), lineWidth: 2)
-                                .opacity(selectedColor == color ? 1 : 0)
+                                .opacity(selectedIndex == index ? 1 : 0)
                         )
-                        .scaleEffect(selectedColor == color ? 1.2 : 1.0)
-                        .animation(.easeInOut(duration: 0.15), value: selectedColor)
+                        .scaleEffect(selectedIndex == index ? 1.2 : 1.0)
+                        .animation(.easeInOut(duration: 0.15), value: selectedIndex)
                 }
                 .buttonStyle(.plain)
             }

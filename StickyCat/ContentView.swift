@@ -2,9 +2,17 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = CatViewModel()
-    @State private var noteText: String = ""
-    @State private var noteColor: Color = Constants.noteColors[0]
+
+    // Persisted state — survives app restarts
+    @AppStorage("noteText")       private var noteText: String = ""
+    @AppStorage("noteColorIndex") private var noteColorIndex: Int = 0
+    @AppStorage("catBreed")       private var savedBreed: String = CatBreed.black.rawValue
+
     @State private var keystrokeCount: Int = 0
+
+    private var noteColor: Color {
+        Constants.noteColors[min(noteColorIndex, Constants.noteColors.count - 1)]
+    }
 
     var body: some View {
         ZStack {
@@ -19,7 +27,7 @@ struct ContentView: View {
             VStack {
                 Spacer()
                 HStack {
-                    NoteColorPickerView(selectedColor: $noteColor)
+                    NoteColorPickerView(selectedIndex: $noteColorIndex)
                     Spacer()
                     BreedPickerView(selectedBreed: $viewModel.selectedBreed)
                 }
@@ -28,9 +36,17 @@ struct ContentView: View {
             }
         }
         .frame(width: Constants.noteWidth, height: Constants.noteHeight)
+        .onAppear {
+            // Restore saved breed on launch
+            if let breed = CatBreed(rawValue: savedBreed) {
+                viewModel.selectedBreed = breed
+            }
+        }
+        .onChange(of: viewModel.selectedBreed) {
+            savedBreed = viewModel.selectedBreed.rawValue
+        }
         .onChange(of: noteText) {
             keystrokeCount += 1
-            // Jump roughly every 8-12 keystrokes
             let threshold = Int.random(in: 8...12)
             if keystrokeCount >= threshold {
                 keystrokeCount = 0
