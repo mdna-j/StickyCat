@@ -19,9 +19,10 @@ struct ContentView: View {
             // 1. Sticky note background + text editor
             StickyNoteView(text: $noteText, color: noteColor)
 
-            // 2. Animated cat — no hit testing so text editor stays clickable
-            CatView(cat: viewModel.cat, frameIndex: viewModel.frameIndex)
-                .allowsHitTesting(false)
+            // 2. Animated cat
+            CatView(cat: viewModel.cat, frameIndex: viewModel.frameIndex) {
+                viewModel.triggerTap()
+            }
 
             // 3. Note color picker (bottom-left) + breed picker (bottom-right)
             VStack {

@@ -61,24 +61,17 @@ class CatViewModel: ObservableObject {
     private func performRandomAction() {
         guard jumpPhase == 0 else { return }
 
-        var pool: [CatAction] = [
-            .walkRight, .walkRight, .walkRight,
-            .walkLeft,  .walkLeft,  .walkLeft,
-            .jump,      .jump,      .jump,
-            .meow,      .meow,      .meow,
-            .idle,      .idle,
-            .pounce,
-            .sleep,
-        ]
+        // Use the breed's personality pool
+        var pool = cat.breed.actionPool
 
+        // Still apply edge bias on top of personality
         if cat.x <= Constants.minX + Constants.walkStep {
             pool = pool.filter { $0 != .walkLeft }
-            pool += [.walkRight, .walkRight, .walkRight]
+            pool += [.walkRight, .walkRight]
         }
-
         if cat.x >= Constants.maxX - Constants.walkStep {
             pool = pool.filter { $0 != .walkRight }
-            pool += [.walkLeft, .walkLeft, .walkLeft]
+            pool += [.walkLeft, .walkLeft]
         }
 
         let action = pool.randomElement() ?? .idle
@@ -98,6 +91,18 @@ class CatViewModel: ObservableObject {
     func triggerTypingJump() {
         guard jumpPhase == 0 else { return }
         performJump()
+    }
+
+    /// Called when the user taps the cat — reacts with meow or pounce
+    func triggerTap() {
+        guard jumpPhase == 0 else { return }
+        let reaction: CatAction = [.meow, .pounce, .jump].randomElement() ?? .meow
+        switch reaction {
+        case .meow:   performMeow()
+        case .pounce: performPounce()
+        case .jump:   performJump()
+        default:      performMeow()
+        }
     }
 
     // MARK: - Actions
