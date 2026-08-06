@@ -24,11 +24,24 @@ struct ContentView: View {
                 viewModel.triggerTap()
             }
 
-            // 3. Note color picker (bottom-left) + breed picker (bottom-right)
+            // 3. Note color picker (bottom-left) + clear button + breed picker (bottom-right)
             VStack {
                 Spacer()
                 HStack {
                     NoteColorPickerView(selectedIndex: $noteColorIndex)
+                    Spacer()
+                    // Clear note button
+                    Button {
+                        noteText = ""
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.primary)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(.ultraThinMaterial, in: Capsule())
+                    }
+                    .buttonStyle(.plain)
                     Spacer()
                     BreedPickerView(selectedBreed: $viewModel.selectedBreed)
                 }
@@ -38,7 +51,6 @@ struct ContentView: View {
         }
         .frame(width: Constants.noteWidth, height: Constants.noteHeight)
         .onAppear {
-            // Restore saved breed on launch
             if let breed = CatBreed(rawValue: savedBreed) {
                 viewModel.selectedBreed = breed
             }
