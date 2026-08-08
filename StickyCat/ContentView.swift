@@ -50,6 +50,7 @@ struct ContentView: View {
             }
         }
         .frame(width: Constants.noteWidth, height: Constants.noteHeight)
+        .ignoresSafeArea()
         .onAppear {
             if let breed = CatBreed(rawValue: savedBreed) {
                 viewModel.selectedBreed = breed

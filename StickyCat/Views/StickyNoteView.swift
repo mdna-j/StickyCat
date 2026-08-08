@@ -12,7 +12,6 @@ struct StickyNoteView: View {
             // Note background
             RoundedRectangle(cornerRadius: 12)
                 .fill(color)
-                .shadow(color: .black.opacity(0.15), radius: 8, x: 2, y: 4)
 
             // Text editor
             NativeTextEditor(text: $text, fontSize: fontSize)
@@ -21,6 +20,7 @@ struct StickyNoteView: View {
                 .padding(.bottom, 80)
         }
         .frame(width: Constants.noteWidth, height: Constants.noteHeight)
+        .ignoresSafeArea()
     }
 }
 
