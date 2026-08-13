@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 enum CatBreed: String, CaseIterable, Identifiable {
     case black       = "Black"
@@ -24,12 +25,35 @@ enum CatBreed: String, CaseIterable, Identifiable {
     // Prefix used to build asset names e.g. "Black-Idle", "OrangeTabby-Run"
     var assetPrefix: String { rawValue }
 
+    // Icon asset name
+    var iconName: String {
+        switch self {
+        case .black:       return "icon-black"
+        case .brown:       return "icon-brown"
+        case .orangeTabby: return "icon-orangetabby"
+        case .siamese:     return "icon-siamese"
+        case .tuxedo:      return "icon-tuxedo"
+        case .white:       return "icon-white"
+        }
+    }
+
+    // Pastel background color for dock icon
+    var iconBackgroundColor: NSColor {
+        switch self {
+        case .black:       return NSColor(red: 0.85, green: 0.85, blue: 0.95, alpha: 1)
+        case .brown:       return NSColor(red: 0.95, green: 0.90, blue: 0.80, alpha: 1)
+        case .orangeTabby: return NSColor(red: 1.00, green: 0.92, blue: 0.80, alpha: 1)
+        case .siamese:     return NSColor(red: 0.85, green: 0.93, blue: 1.00, alpha: 1)
+        case .tuxedo:      return NSColor(red: 0.90, green: 0.95, blue: 0.90, alpha: 1)
+        case .white:       return NSColor(red: 1.00, green: 0.88, blue: 0.92, alpha: 1)
+        }
+    }
+
     // Each breed has its own weighted action pool giving it a distinct personality
     var actionPool: [CatAction] {
         switch self {
 
         case .black:
-            // Mysterious — lurks, pounces, sleeps a lot. Rarely meows.
             return [
                 .idle,   .idle,
                 .walkRight, .walkLeft,
@@ -39,7 +63,6 @@ enum CatBreed: String, CaseIterable, Identifiable {
             ]
 
         case .brown:
-            // Lazy and chill — mostly idles and sleeps, slow walks, rarely jumps
             return [
                 .idle,   .idle,   .idle,
                 .sleep,  .sleep,  .sleep,
@@ -49,7 +72,6 @@ enum CatBreed: String, CaseIterable, Identifiable {
             ]
 
         case .orangeTabby:
-            // Chaotic gremlin — constantly moving, jumps everywhere, barely sleeps
             return [
                 .walkRight, .walkRight, .walkRight,
                 .walkLeft,  .walkLeft,  .walkLeft,
@@ -60,7 +82,6 @@ enum CatBreed: String, CaseIterable, Identifiable {
             ]
 
         case .siamese:
-            // Vocal and dramatic — meows constantly, walks around announcing itself
             return [
                 .meow,   .meow,   .meow,   .meow,
                 .walkRight, .walkRight,
@@ -71,7 +92,6 @@ enum CatBreed: String, CaseIterable, Identifiable {
             ]
 
         case .tuxedo:
-            // Dramatic and fancy — lots of posing, pouncing, jumping
             return [
                 .pounce, .pounce, .pounce,
                 .jump,   .jump,   .jump,
@@ -82,7 +102,6 @@ enum CatBreed: String, CaseIterable, Identifiable {
             ]
 
         case .white:
-            // Calm and elegant — mostly sits still, gentle walks, occasional meow
             return [
                 .idle,   .idle,   .idle,   .idle,
                 .walkRight, .walkRight,

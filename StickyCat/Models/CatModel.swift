@@ -15,7 +15,7 @@ struct CatModel {
         self.facingRight = true
     }
 
-    /// Full asset name e.g. "Black-Idle"
+    // Full asset name e.g. "Black-Idle"
     var assetName: String {
         "\(breed.assetPrefix)-\(state.assetSuffix)"
     }

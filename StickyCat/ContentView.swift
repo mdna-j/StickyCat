@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct ContentView: View {
     @StateObject private var viewModel = CatViewModel()
@@ -30,7 +31,6 @@ struct ContentView: View {
                 HStack {
                     NoteColorPickerView(selectedIndex: $noteColorIndex)
                     Spacer()
-                    // Clear note button
                     Button {
                         noteText = ""
                     } label: {
@@ -55,9 +55,11 @@ struct ContentView: View {
             if let breed = CatBreed(rawValue: savedBreed) {
                 viewModel.selectedBreed = breed
             }
+            updateDockIcon(for: viewModel.selectedBreed)
         }
         .onChange(of: viewModel.selectedBreed) {
             savedBreed = viewModel.selectedBreed.rawValue
+            updateDockIcon(for: viewModel.selectedBreed)
         }
         .onChange(of: noteText) {
             keystrokeCount += 1
@@ -67,6 +69,56 @@ struct ContentView: View {
                 viewModel.triggerTypingJump()
             }
         }
+    }
+
+    private func updateDockIcon(for breed: CatBreed) {
+        guard let catImage = NSImage(named: breed.iconName),
+              let cgCat = catImage.cgImage(forProposedRect: nil, context: nil, hints: nil)
+        else { return }
+
+        let size = 1024
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        guard let ctx = CGContext(
+            data: nil,
+            width: size, height: size,
+            bitsPerComponent: 8,
+            bytesPerRow: size * 4,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else { return }
+
+        let rect = CGRect(origin: .zero, size: CGSize(width: size, height: size))
+        let radius = CGFloat(size) * 0.225  // macOS icon corner radius
+
+        // Clip to rounded rect first
+        ctx.beginPath()
+        ctx.move(to: CGPoint(x: radius, y: 0))
+        ctx.addLine(to: CGPoint(x: CGFloat(size) - radius, y: 0))
+        ctx.addArc(center: CGPoint(x: CGFloat(size) - radius, y: radius), radius: radius, startAngle: -.pi/2, endAngle: 0, clockwise: false)
+        ctx.addLine(to: CGPoint(x: CGFloat(size), y: CGFloat(size) - radius))
+        ctx.addArc(center: CGPoint(x: CGFloat(size) - radius, y: CGFloat(size) - radius), radius: radius, startAngle: 0, endAngle: .pi/2, clockwise: false)
+        ctx.addLine(to: CGPoint(x: radius, y: CGFloat(size)))
+        ctx.addArc(center: CGPoint(x: radius, y: CGFloat(size) - radius), radius: radius, startAngle: .pi/2, endAngle: .pi, clockwise: false)
+        ctx.addLine(to: CGPoint(x: 0, y: radius))
+        ctx.addArc(center: CGPoint(x: radius, y: radius), radius: radius, startAngle: .pi, endAngle: .pi*3/2, clockwise: false)
+        ctx.closePath()
+        ctx.clip()
+
+        // Fill background with pastel color
+        let bg = breed.iconBackgroundColor
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        bg.getRed(&r, green: &g, blue: &b, alpha: &a)
+        ctx.setFillColor(red: r, green: g, blue: b, alpha: a)
+        ctx.fill(rect)
+
+        // Draw cat filling the whole icon
+        ctx.draw(cgCat, in: rect)
+
+        guard let cgFinal = ctx.makeImage() else { return }
+        let finalImage = NSImage(cgImage: cgFinal, size: NSSize(width: size, height: size))
+
+        NSApplication.shared.applicationIconImage = nil
+        NSApplication.shared.applicationIconImage = finalImage
     }
 }
 
