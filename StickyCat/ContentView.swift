@@ -4,11 +4,12 @@ import AppKit
 struct ContentView: View {
     @StateObject private var viewModel = CatViewModel()
 
-    // Persisted state - survives app restarts
+    // Persisted state — survives app restarts
     @AppStorage("noteText")       private var noteText: String = ""
     @AppStorage("noteColorIndex") private var noteColorIndex: Int = 0
     @AppStorage("catBreed")       private var savedBreed: String = CatBreed.black.rawValue
 
+    @State private var showClearConfirmation: Bool = false
     @State private var keystrokeCount: Int = 0
 
     private var noteColor: Color {
@@ -32,7 +33,7 @@ struct ContentView: View {
                     NoteColorPickerView(selectedIndex: $noteColorIndex)
                     Spacer()
                     Button {
-                        noteText = ""
+                        showClearConfirmation = true
                     } label: {
                         Image(systemName: "trash")
                             .font(.system(size: 12, weight: .medium))
@@ -42,6 +43,12 @@ struct ContentView: View {
                             .background(.ultraThinMaterial, in: Capsule())
                     }
                     .buttonStyle(.plain)
+                    .confirmationDialog("Clear note?", isPresented: $showClearConfirmation) {
+                        Button("Clear", role: .destructive) { noteText = "" }
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("This will permanently delete everything on the note.")
+                    }
                     Spacer()
                     BreedPickerView(selectedBreed: $viewModel.selectedBreed)
                 }
