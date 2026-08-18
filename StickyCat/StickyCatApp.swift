@@ -6,6 +6,7 @@ struct StickyCatApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .ignoresSafeArea()
                 .onAppear {
                     guard let window = NSApplication.shared.windows.first else { return }
                     window.isOpaque = false

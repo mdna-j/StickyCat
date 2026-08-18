@@ -4,7 +4,7 @@ import AppKit
 struct ContentView: View {
     @StateObject private var viewModel = CatViewModel()
 
-    // Persisted state — survives app restarts
+    // Persisted state - survives app restarts
     @AppStorage("noteText")       private var noteText: String = ""
     @AppStorage("noteColorIndex") private var noteColorIndex: Int = 0
     @AppStorage("catBreed")       private var savedBreed: String = CatBreed.black.rawValue
