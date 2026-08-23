@@ -8,8 +8,8 @@ struct CatModel {
     var facingRight: Bool
 
     init(breed: CatBreed = .black) {
-        self.x = Constants.minX + 20
-        self.y = Constants.floorY
+        self.x = Constants.noteHorizontalInset + 20
+        self.y = Constants.noteHeight - Constants.noteBottomControlHeight
         self.state = .idle
         self.breed = breed
         self.facingRight = true

@@ -16,6 +16,8 @@ class CatViewModel: ObservableObject {
     @Published var cat: CatModel = CatModel(breed: .black)
     @Published var frameIndex: Int = 0
 
+    private var noteSize = CGSize(width: Constants.noteWidth, height: Constants.noteHeight)
+
     @Published var selectedBreed: CatBreed = .black {
         didSet { cat.breed = selectedBreed }
     }
@@ -65,11 +67,11 @@ class CatViewModel: ObservableObject {
         var pool = cat.breed.actionPool
 
         // Still apply edge bias on top of personality
-        if cat.x <= Constants.minX + Constants.walkStep {
+        if cat.x <= minX + Constants.walkStep {
             pool = pool.filter { $0 != .walkLeft }
             pool += [.walkRight, .walkRight]
         }
-        if cat.x >= Constants.maxX - Constants.walkStep {
+        if cat.x >= maxX - Constants.walkStep {
             pool = pool.filter { $0 != .walkRight }
             pool += [.walkLeft, .walkLeft]
         }
@@ -117,10 +119,10 @@ class CatViewModel: ObservableObject {
         let newX: CGFloat
         switch direction {
         case .right:
-            newX = min(cat.x + Constants.walkStep, Constants.maxX)
+            newX = min(cat.x + Constants.walkStep, maxX)
             cat.facingRight = true
         case .left:
-            newX = max(cat.x - Constants.walkStep, Constants.minX)
+            newX = max(cat.x - Constants.walkStep, minX)
             cat.facingRight = false
         }
 
@@ -136,11 +138,11 @@ class CatViewModel: ObservableObject {
         jumpPhase = 1
         setState(.jump)
 
-        withAnimation(.easeOut(duration: 0.25)) { cat.y = Constants.jumpY }
+        withAnimation(.easeOut(duration: 0.25)) { cat.y = jumpY }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self else { return }
-            withAnimation(.easeIn(duration: 0.25)) { self.cat.y = Constants.floorY }
+            withAnimation(.easeIn(duration: 0.25)) { self.cat.y = self.floorY }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
                 self?.setState(.idle)
                 self?.jumpPhase = 0
@@ -169,7 +171,33 @@ class CatViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Note Size
+
+    func updateNoteSize(_ size: CGSize) {
+        guard size.width > 0, size.height > 0, size != noteSize else { return }
+
+        noteSize = size
+        cat.x = min(max(cat.x, minX), maxX)
+        cat.y = floorY
+    }
+
     // MARK: - Helpers
+
+    private var minX: CGFloat {
+        Constants.noteHorizontalInset
+    }
+
+    private var maxX: CGFloat {
+        max(minX, noteSize.width - Constants.noteHorizontalInset)
+    }
+
+    private var floorY: CGFloat {
+        max(Constants.catHeight, noteSize.height - Constants.noteBottomControlHeight)
+    }
+
+    private var jumpY: CGFloat {
+        max(Constants.catHeight, floorY - 60)
+    }
 
     private func setState(_ state: CatState) {
         frameIndex = 0

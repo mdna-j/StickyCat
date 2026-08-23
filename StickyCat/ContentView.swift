@@ -17,46 +17,61 @@ struct ContentView: View {
     }
 
     var body: some View {
-        ZStack {
-            // 1. Sticky note background + text editor
-            StickyNoteView(text: $noteText, color: noteColor)
+        GeometryReader { proxy in
+            ZStack {
+                // 1. Sticky note background + text editor
+                StickyNoteView(text: $noteText, color: noteColor)
 
-            // 2. Animated cat
-            CatView(cat: viewModel.cat, frameIndex: viewModel.frameIndex) {
-                viewModel.triggerTap()
-            }
-
-            // 3. Note color picker (bottom-left) + clear button + breed picker (bottom-right)
-            VStack {
-                Spacer()
-                HStack {
-                    NoteColorPickerView(selectedIndex: $noteColorIndex)
-                    Spacer()
-                    Button {
-                        showClearConfirmation = true
-                    } label: {
-                        Image(systemName: "trash")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.primary)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(.ultraThinMaterial, in: Capsule())
-                    }
-                    .buttonStyle(.plain)
-                    .confirmationDialog("Clear note?", isPresented: $showClearConfirmation) {
-                        Button("Clear", role: .destructive) { noteText = "" }
-                        Button("Cancel", role: .cancel) {}
-                    } message: {
-                        Text("This will permanently delete everything on the note.")
-                    }
-                    Spacer()
-                    BreedPickerView(selectedBreed: $viewModel.selectedBreed)
+                // 2. Animated cat
+                CatView(cat: viewModel.cat, frameIndex: viewModel.frameIndex) {
+                    viewModel.triggerTap()
                 }
-                .padding(.horizontal, 12)
-                .padding(.bottom, 12)
+
+                // 3. Note color picker (bottom-left) + clear button + breed picker (bottom-right)
+                VStack {
+                    Spacer()
+                    HStack {
+                        NoteColorPickerView(selectedIndex: $noteColorIndex)
+                        Spacer()
+                        Button {
+                            showClearConfirmation = true
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.primary)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background(.ultraThinMaterial, in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .confirmationDialog("Clear note?", isPresented: $showClearConfirmation) {
+                            Button("Clear", role: .destructive) { noteText = "" }
+                            Button("Cancel", role: .cancel) {}
+                        } message: {
+                            Text("This will permanently delete everything on the note.")
+                        }
+                        Spacer()
+                        BreedPickerView(selectedBreed: $viewModel.selectedBreed)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.bottom, 12)
+                }
+            }
+            .onAppear {
+                viewModel.updateNoteSize(proxy.size)
+            }
+            .onChange(of: proxy.size) {
+                viewModel.updateNoteSize(proxy.size)
             }
         }
-        .frame(width: Constants.noteWidth, height: Constants.noteHeight)
+        .frame(
+            minWidth: Constants.minNoteWidth,
+            idealWidth: Constants.noteWidth,
+            maxWidth: .infinity,
+            minHeight: Constants.minNoteHeight,
+            idealHeight: Constants.noteHeight,
+            maxHeight: .infinity
+        )
         .ignoresSafeArea()
         .onAppear {
             if let breed = CatBreed(rawValue: savedBreed) {

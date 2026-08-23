@@ -19,7 +19,6 @@ struct StickyNoteView: View {
                 .padding(.horizontal, 14)
                 .padding(.bottom, 80)
         }
-        .frame(width: Constants.noteWidth, height: Constants.noteHeight)
         .ignoresSafeArea()
     }
 }

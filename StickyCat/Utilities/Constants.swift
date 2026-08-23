@@ -3,6 +3,11 @@ import SwiftUI
 enum Constants {
     static let noteWidth: CGFloat = 380
     static let noteHeight: CGFloat = 420
+    static let minNoteWidth: CGFloat = 280
+    static let minNoteHeight: CGFloat = 260
+
+    static let noteHorizontalInset: CGFloat = 40
+    static let noteBottomControlHeight: CGFloat = 110
 
     static let catWidth: CGFloat = 56
     static let catHeight: CGFloat = 56
