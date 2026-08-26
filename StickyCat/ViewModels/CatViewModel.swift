@@ -17,6 +17,7 @@ class CatViewModel: ObservableObject {
     @Published var frameIndex: Int = 0
 
     private var noteSize = CGSize(width: Constants.noteWidth, height: Constants.noteHeight)
+    private var catScale = Constants.defaultCatScale
 
     @Published var selectedBreed: CatBreed = .black {
         didSet { cat.breed = selectedBreed }
@@ -177,26 +178,47 @@ class CatViewModel: ObservableObject {
         guard size.width > 0, size.height > 0, size != noteSize else { return }
 
         noteSize = size
-        cat.x = min(max(cat.x, minX), maxX)
-        cat.y = floorY
+        clampCatToNote()
+    }
+
+    func updateCatScale(_ scale: Double) {
+        let clampedScale = min(max(scale, Constants.minCatScale), Constants.maxCatScale)
+        guard clampedScale != catScale else { return }
+
+        catScale = clampedScale
+        clampCatToNote()
     }
 
     // MARK: - Helpers
 
+    private var scaledCatWidth: CGFloat {
+        Constants.catWidth * CGFloat(catScale)
+    }
+
+    private var scaledCatHeight: CGFloat {
+        Constants.catHeight * CGFloat(catScale)
+    }
+
     private var minX: CGFloat {
-        Constants.noteHorizontalInset
+        Constants.noteHorizontalInset + scaledCatWidth / 2
     }
 
     private var maxX: CGFloat {
-        max(minX, noteSize.width - Constants.noteHorizontalInset)
+        max(minX, noteSize.width - Constants.noteHorizontalInset - scaledCatWidth / 2)
     }
 
     private var floorY: CGFloat {
-        max(Constants.catHeight, noteSize.height - Constants.noteBottomControlHeight)
+        let bottomInset = Constants.noteBottomControlHeight - Constants.catHeight / 2
+        return max(scaledCatHeight / 2, noteSize.height - bottomInset - scaledCatHeight / 2)
     }
 
     private var jumpY: CGFloat {
-        max(Constants.catHeight, floorY - 60)
+        max(scaledCatHeight / 2, floorY - 60)
+    }
+
+    private func clampCatToNote() {
+        cat.x = min(max(cat.x, minX), maxX)
+        cat.y = floorY
     }
 
     private func setState(_ state: CatState) {

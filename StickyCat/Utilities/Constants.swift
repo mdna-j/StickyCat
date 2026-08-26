@@ -11,6 +11,9 @@ enum Constants {
 
     static let catWidth: CGFloat = 56
     static let catHeight: CGFloat = 56
+    static let minCatScale: Double = 0.7
+    static let maxCatScale: Double = 1.8
+    static let defaultCatScale: Double = 1.0
 
     static let minX: CGFloat = 40
     static let maxX: CGFloat = 300

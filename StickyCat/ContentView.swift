@@ -8,6 +8,7 @@ struct ContentView: View {
     @AppStorage("noteText")       private var noteText: String = ""
     @AppStorage("noteColorIndex") private var noteColorIndex: Int = 0
     @AppStorage("catBreed")       private var savedBreed: String = CatBreed.black.rawValue
+    @AppStorage("catScale")       private var catScale: Double = Constants.defaultCatScale
 
     @State private var showClearConfirmation: Bool = false
     @State private var keystrokeCount: Int = 0
@@ -23,7 +24,7 @@ struct ContentView: View {
                 StickyNoteView(text: $noteText, color: noteColor)
 
                 // 2. Animated cat
-                CatView(cat: viewModel.cat, frameIndex: viewModel.frameIndex) {
+                CatView(cat: viewModel.cat, frameIndex: viewModel.frameIndex, scale: catScale) {
                     viewModel.triggerTap()
                 }
 
@@ -50,6 +51,8 @@ struct ContentView: View {
                         } message: {
                             Text("This will permanently delete everything on the note.")
                         }
+
+                        CatSizeControlView(catScale: $catScale)
                         Spacer()
                         BreedPickerView(selectedBreed: $viewModel.selectedBreed)
                     }
@@ -59,6 +62,7 @@ struct ContentView: View {
             }
             .onAppear {
                 viewModel.updateNoteSize(proxy.size)
+                viewModel.updateCatScale(catScale)
             }
             .onChange(of: proxy.size) {
                 viewModel.updateNoteSize(proxy.size)
@@ -82,6 +86,9 @@ struct ContentView: View {
         .onChange(of: viewModel.selectedBreed) {
             savedBreed = viewModel.selectedBreed.rawValue
             updateDockIcon(for: viewModel.selectedBreed)
+        }
+        .onChange(of: catScale) {
+            viewModel.updateCatScale(catScale)
         }
         .onChange(of: noteText) {
             keystrokeCount += 1
@@ -141,6 +148,46 @@ struct ContentView: View {
 
         NSApplication.shared.applicationIconImage = nil
         NSApplication.shared.applicationIconImage = finalImage
+    }
+}
+
+private struct CatSizeControlView: View {
+    @Binding var catScale: Double
+    @State private var showsSizePopover = false
+
+    var body: some View {
+        Button {
+            showsSizePopover.toggle()
+        } label: {
+            Image(systemName: "cat")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(.primary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(.ultraThinMaterial, in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: $showsSizePopover, arrowEdge: .bottom) {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Cat Size")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+
+                HStack(spacing: 10) {
+                    Image(systemName: "cat")
+                        .font(.system(size: 10, weight: .medium))
+
+                    Slider(
+                        value: $catScale,
+                        in: Constants.minCatScale...Constants.maxCatScale
+                    )
+                    .frame(width: 140)
+
+                    Image(systemName: "cat.fill")
+                        .font(.system(size: 14, weight: .medium))
+                }
+            }
+            .padding(14)
+        }
     }
 }
 
